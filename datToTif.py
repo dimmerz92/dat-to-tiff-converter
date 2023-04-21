@@ -1,27 +1,46 @@
+import matplotlib.pyplot as plt
+import numpy as np
 import sys
 import os
 import re
-import numpy as np
-from PIL import Image, ImageOps
 
 files = os.listdir() # list all files in the current working directory
 files = [file for file in files if re.match(".*.dat$", file)] # exclude files that are not .dat files
 
 # make an output folder to store images
-output = "tif_outputs"
 try:
-    os.mkdir(output)
-except FileExistsError:
-    sys.exit("tif_outputs folder exists")
+       os.makedirs("Processed", exist_ok = True)
+except Exception as e:
+       sys.exit(e)
 
 # generate and colour each image
 for file in files:
     with open(file, "r") as f:
-        data = f.readlines()
-        lines = [line.strip().split("\t") for line in data] # splits on the tab delimiter and strips whitespace
-        for i in range(len(lines)):
-            lines[i] = [float(line.strip()) for line in lines[i]] # removes whitespace from individual list items
-        image = np.array(lines) # convert to array
-        image = (image - image.min())/(image.max() - image.min()) * 255# normalise data
-        image = ImageOps.colorize(Image.fromarray(image).convert("L"), "yellow", "blue") # colorise on the interval 0 = yellow to 1 = blue
-        image.save(f"{output}/{file[:-3]}tif") # save the image to the directory
+        img = np.loadtxt(f)
+    # Determine the contrast min and max based on file name
+        if '_1705-1760' in file:
+                contrast_min, contrast_max = 0.05, 0.5
+        elif '_1480-1590' in file:
+                contrast_min, contrast_max = 0, 2.5
+        elif '_1725-1760' in file:
+                contrast_min, contrast_max = 0, 0.3
+        elif '_2907-2944' in file:
+                contrast_min, contrast_max = 0.05, 0.225
+        elif '_2946-2880' in file:
+                contrast_min, contrast_max = 0, 0.225    
+        elif any(substr in file for substr in ["_2946-2980", "_2865-2885", "_3000-3020"]):
+               contrast_min, contrast_max = 0, 0.2
+        elif "VN_1480-1590_1725-1770" not in file and any(substr in file for substr in ["_2840-2865", "_1725-1770"]):
+               contrast_min, contrast_max = 0, 0.08
+        else:
+               contrast_min, contrast_max = 0, 0.15
+
+        # Save figure as is
+        fig, ax = plt.subplots()
+        image = ax.imshow(img, interpolation="bilinear", cmap="jet", vmin=contrast_min, vmax=contrast_max)
+        plt.colorbar(image, ax=ax)
+        plt.axis("off")
+        plt.tight_layout()
+        plt.savefig(f"Processed{os.sep}{file[:-4]}.tiff_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
+
+        print(f"Processed file: {file}")
