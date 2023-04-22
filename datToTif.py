@@ -23,7 +23,6 @@ except Exception as e:
        sys.exit(e)
 
 images = []
-
 # generate and colour each image
 for i, file in enumerate(files):
         with open(file, "r") as f:
@@ -58,11 +57,9 @@ for i, file in enumerate(files):
 
         print(f"Processed file: {file}")
 
-
 # build the combined figure
 ncols = 6
 nrows = math.ceil(len(files) / ncols)
-
 
 fig = plt.figure(figsize=(10,6))
 gs = gridspec.GridSpec(nrows=nrows+1, ncols=ncols, height_ratios=[0.02] + [1]*(nrows))
