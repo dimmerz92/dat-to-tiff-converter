@@ -82,4 +82,4 @@ for i, img in enumerate(images):
 
 plt.suptitle(fig_title, fontweight="bold", fontsize="x-large")
 plt.tight_layout()
-plt.show()
+fig.savefig(f"{fig_title}.tiff")
