@@ -53,7 +53,7 @@ for i, file in enumerate(files):
         plt.colorbar(image, ax=ax)
         plt.axis("off")
         plt.tight_layout()
-        plt.savefig(f"processed{os.sep}{file[:-4]}.tiff_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
+        plt.savefig(f"processed{os.sep}{file[:-4]}_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
         plt.close(fig)
 
         print(f"Processed file: {file}")
