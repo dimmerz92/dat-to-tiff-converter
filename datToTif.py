@@ -12,7 +12,7 @@ titles = [re.search("((?=[A-Za-z])(?:(?!_SM|_CELL).)*)", title).group(1) for tit
 fig_title = [*set([re.search("((?=CELL)(?:(?!_[A-Z]).)*)", title).group(1) for title in files])][0].replace("_", " ")
 
 # sort in desired lexicographic order
-titles = sorted(titles, key=lambda x:(1,x) if ":" in x else (0,x))
+titles = sorted(titles, key=lambda x:(1,x) if ":" in x else (0,x.upper()))
 order={v:i for i, v in enumerate(titles)}
 files = sorted(files, key=lambda x:order[re.search("((?=[A-Za-z])(?:(?!_SM|_CELL).)*)", x).group(1)])
 
@@ -82,4 +82,4 @@ for i, img in enumerate(images):
 
 plt.suptitle(fig_title, fontweight="bold", fontsize="x-large")
 plt.tight_layout()
-fig.savefig(f"{fig_title}.tiff")
+plt.show()
