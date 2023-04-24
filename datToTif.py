@@ -1,24 +1,34 @@
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import filedialog
 import numpy as np
 import math
 import sys
 import os
 import re
 
+# select directory
+root = tk.Tk()
+root.withdraw()
+os.chdir(filedialog.askdirectory())
+
+# get file names and figure titles
 files = os.listdir() # list all files in the current working directory
 files = [file for file in files if re.match(".*.dat$", file)] # exclude files that are not .dat files
-titles = [re.search("((?=[A-Za-z])(?:(?!_SM|_CELL).)*)", title).group(1) for title in files] # extract titles from filenames
-fig_title = [*set([re.search("((?=CELL)(?:(?!_[A-Z]).)*)", title).group(1) for title in files])][0].replace("_", " ")
+titles = [re.search("((?=[A-Za-z])(?:(?!_SM|_CELL|_Cell).)*)", title).group(1) for title in files] # extract titles from filenames
+fig_title = [*set([re.search("((?=CELL|Cell)(?:(?!_[A-Z]).)*)", title).group(1) for title in files])][0].replace("_", " ")
 
 # sort in desired lexicographic order
-titles = sorted(titles, key=lambda x:(1,x) if ":" in x else (0,x.upper()))
+titles = sorted(titles, key=lambda x:(1,x) if "~" in x else (0,x.upper()))
 order={v:i for i, v in enumerate(titles)}
-files = sorted(files, key=lambda x:order[re.search("((?=[A-Za-z])(?:(?!_SM|_CELL).)*)", x).group(1)])
+files = sorted(files, key=lambda x:order[re.search("((?=[A-Za-z])(?:(?!_SM|_CELL|_Cell).)*)", x).group(1)])
 
 # make an output folder to store images
 try:
-       os.makedirs("Processed", exist_ok = True)
+       os.makedirs("processed", exist_ok = True)
+       os.makedirs("scale", exist_ok = True)
+       os.makedirs("axis_scale", exist_ok = True)
 except Exception as e:
        sys.exit(e)
 
@@ -49,10 +59,13 @@ for i, file in enumerate(files):
         # Save individual figure
         fig, ax = plt.subplots()
         image = ax.imshow(img, interpolation="bilinear", cmap="jet", vmin=contrast_min, vmax=contrast_max)
-        plt.colorbar(image, ax=ax)
         plt.axis("off")
-        plt.tight_layout()
         plt.savefig(f"processed{os.sep}{file[:-4]}_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
+        plt.colorbar(image, ax=ax)
+        plt.savefig(f"scale{os.sep}{file[:-4]}_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
+        plt.axis("on")
+        plt.gca().invert_yaxis()
+        plt.savefig(f"axis_scale{os.sep}{file[:-4]}_vmin={contrast_min}_vmax={contrast_max}_jet.tiff", dpi=300)
         plt.close(fig)
 
         print(f"Processed file: {file}")
