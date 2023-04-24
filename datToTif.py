@@ -11,7 +11,13 @@ import re
 # select directory
 root = tk.Tk()
 root.withdraw()
-os.chdir(filedialog.askdirectory())
+try:
+        path = filedialog.askdirectory()
+        if not path:
+                sys.exit("\n\nUser cancelled operation\n")
+        os.chdir(path)
+except Exception as e:
+        sys.exit(e)
 
 # get file names and figure titles
 files = os.listdir() # list all files in the current working directory
