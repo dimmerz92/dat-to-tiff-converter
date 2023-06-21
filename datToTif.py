@@ -39,6 +39,7 @@ except Exception as e:
        sys.exit(e)
 
 images = []
+contrasts = []
 # generate and colour each image
 for i, file in enumerate(files):
         with open(file, "r") as f:
@@ -61,6 +62,9 @@ for i, file in enumerate(files):
                 contrast_min, contrast_max = 0, 0.08
         else:
                 contrast_min, contrast_max = 0, 0.15
+        
+        # save contrasts
+        contrasts.append([contrast_min, contrast_max])
 
         # Save individual figure
         fig, ax = plt.subplots()
@@ -92,7 +96,7 @@ for i, title in enumerate(col_titles):
 
 for i, img in enumerate(images):
         ax = plt.subplot(gs[i + ncols])
-        ax.imshow(img, interpolation="bilinear", cmap="jet", vmin=contrast_min, vmax=contrast_max)
+        ax.imshow(img, interpolation="bilinear", cmap="jet", vmin=contrasts[i][0], vmax=contrasts[i][1])
         ax.set_title(titles[i])
         ax.set_axis_off()
 
