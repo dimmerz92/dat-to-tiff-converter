@@ -98,7 +98,6 @@ for i, file in enumerate(files):
 
     # save contrasts
     contrasts.append([contrast_min, contrast_max])
-    print(contrasts)
 
     # Save individual figure
     fig, ax = plt.subplots()
